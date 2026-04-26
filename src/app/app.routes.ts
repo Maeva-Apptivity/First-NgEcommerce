@@ -6,12 +6,12 @@ export const routes: Routes = [
     {
         path: '',
         pathMatch:'full',
-        redirectTo:'products'
+        redirectTo:'products/all'
     },
 
     // route vers la liste de produits
     {
-        path : 'products',
+        path : 'products/:category',
         loadComponent: () => import('./pages/products-grid/products-grid'),
     },
     // route vers la wishlist
