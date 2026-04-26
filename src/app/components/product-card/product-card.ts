@@ -51,6 +51,6 @@ export class ProductCard {
   // reception du tableau product
   product = input.required<Product>();
 
-  // sorti
+  // émetteur d'événement pour l'ajout du produit dans le panier
   addToCartClicked = output<Product>();
 }

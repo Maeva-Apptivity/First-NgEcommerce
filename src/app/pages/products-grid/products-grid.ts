@@ -1,25 +1,64 @@
 import { Component, computed, input, signal } from '@angular/core';
 import { Product } from '../../models/products';
 import { ProductCard } from "../../components/product-card/product-card";
-
+import {MatSidenavContainer, MatSidenavContent, MatSidenav} from '@angular/material/sidenav';
+import { MatNavList, MatListItem, MatListItemTitle } from '@angular/material/list';
+import { RouterLink } from '@angular/router';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-products-grid',
-  imports: [ProductCard],
+  imports: [
+              ProductCard,
+              MatSidenavContainer,
+              MatSidenavContent,
+              MatSidenav,
+              MatNavList,
+              MatListItem, 
+              MatListItemTitle,
+              RouterLink,
+              TitleCasePipe,
+          ],
   template: `
-    <div class="bg-gray-100 p-6 h-full">
-        <h1 class="text-2xl font-bold text-gray-900 mb-6">{{category()}}</h1>
-      <div class="responsive-grid ">
-        @for (product of filteredProducts(); track product.id) {
-          <app-product-card [product]="product"/>
-        }
-      </div>
-    </div>
+
+<!-- Section SideBar -->
+    <mat-sidenav-container>
+      <mat-sidenav mode="side" opened="true">
+        <div class="p-6">
+          <h2 class="text-lg text-gray-900">Catégories</h2>
+
+          <!-- Section qui liste les différente catégories -->
+          <mat-nav-list>
+            @for (cat of categories(); track cat){
+              <mat-list-item [activated]="cat === category()" class="my-2" [routerLink]="['/products', cat]">
+                <span matListItemTitle class="font-medium" [class]="cat === category() ?  '!text-white': null">
+                  {{cat| titlecase}}
+                </span>
+              </mat-list-item>
+            }
+          </mat-nav-list>
+        </div>
+      </mat-sidenav>
+
+      <!-- Section grille avec produit filtrée -->
+      <mat-sidenav-content class="bg-gray-100 p-6 h-full">
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">{{category() | titlecase}}</h1>
+        <p class="text-base text-gray-600 mb-6">
+          {{ filteredProducts().length }} products found
+        </p>
+        <div class="responsive-grid ">
+          @for (product of filteredProducts(); track product.id) {
+            <app-product-card [product]="product"/>
+          }
+        </div>
+      </mat-sidenav-content>
+
+    </mat-sidenav-container>
   `,
   styles: ``,
 })
 export default class ProductsGrid {
-  // Input reactif sur la categorie
+  // Input réactif sur la categorie sélectionné
   category = input<string>('all');
   // Signal contenant la liste des produits
   products = signal<Product[]>([
@@ -113,7 +152,7 @@ export default class ProductsGrid {
     }
   ]);
 
-  //filtre les produits a afficher en fonction de la catégorie sélectionnée
+  // Liste des produits filtrés selon la catégorie
   filteredProducts = computed(() => {
 
     if (this.category() === 'all') return this.products();
@@ -121,4 +160,7 @@ export default class ProductsGrid {
     return this.products().filter((p) => p.category === this.category().toLowerCase());
 
   });
+
+  // Liste des catégories disponibles
+  categories = signal<string[]>(['all', 'layer cake','classiques', 'douceurs fondantes','coffrets gourmands']);
 }
