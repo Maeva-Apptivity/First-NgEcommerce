@@ -1,14 +1,25 @@
-import { computed } from "@angular/core";
+import { computed, inject } from "@angular/core";
 import { Product } from "./models/products"
-import { patchState, signalMethod, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { 
+    patchState,
+    signalMethod,
+    signalStore,
+    withComputed,
+    withMethods,
+    withState,
+} from '@ngrx/signals';
+import {produce} from "immer";
+import { Toaster } from "./services/toaster";
 
 export type EcommerceState = {
     products : Product[];
     category : string;
+    wishlistItems : Product[];
 }
 
 export const EcommerceStore = signalStore(
 
+    // Rend le store accessible dans l'ensemble de l'application
     {
         providedIn : 'root'
     },
@@ -105,22 +116,44 @@ export const EcommerceStore = signalStore(
             }
         ],
         category : 'all',
-    }),
+        wishlistItems : [],
+    } as EcommerceState),
 
-    withComputed(({category, products}) => ({
+    withComputed(({category, products, wishlistItems}) => ({
 
-        // Liste des produits filtrés selon la catégorie
+        // Liste les produits filtrés en fonction de la catégorie sélectionnée
         filteredProducts : computed(() => {
             if (category() === 'all') return products();
             return products().filter((p) => p.category === category().toLowerCase());
-        })
+        }),
+        wishlistCount: computed(()=> wishlistItems().length),
     })),
 
     // Action réactive pour mettre à jour l'état de la catégorie
-    withMethods((store)=>({
+    withMethods((store, toaster = inject(Toaster))=>({
         setCategory : signalMethod<string>((category: string) => {
             patchState(store,{category});
-        })
+        }),
+
+        // Ajoute un produit a la liste de souhaits 
+        addToWishlist : (product : Product) => {
+            const updatedWishlistItems = produce(store.wishlistItems(),(draft)=>{
+                if (!draft.find(p => p.id === product.id)){
+                    draft.push(product);
+                }
+            });
+            // Met a jour l'état de la liste de souhaits dans le store
+            patchState(store,{ wishlistItems : updatedWishlistItems })
+            // Affiche la notification de succès
+            toaster.success("Product added to wishlist");
+        },
+        // Retrait du produit de la liste de souhaits et  met a jour l'état
+        removeFromWishlist: (product : Product)=> {
+            patchState(store,{
+                wishlistItems: store.wishlistItems().filter((p)=> p.id !== product.id),
+            });
+            toaster.success('Product removed from wishlist');
+        }
     }))
 
 );

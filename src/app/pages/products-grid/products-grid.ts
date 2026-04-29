@@ -53,7 +53,6 @@ import { EcommerceStore } from '../../ecommerce-store';
           }
         </div>
       </mat-sidenav-content>
-
     </mat-sidenav-container>
   `,
   styles: ``,
