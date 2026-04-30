@@ -13,7 +13,9 @@ import { MatIcon } from "@angular/material/icon";
     <div class="relative bg-white cursor-pointer rounded-xl shadow-lg overflow-hidden flex flex-col h-full">
       <img [src]="product().imageUrl" class="w-full h-[300px] object-cover rounded-t-xl">
 
+      <!-- Injection dynamique du bouton favoris  -->
       <ng-content/>
+
       <!-- Section information du produit -->
       <div class="p-5 flex flex-col flex-1">
         <h3 class="text-lg font-semibold text-gray-900 mb-2 leading-tight">
@@ -34,11 +36,11 @@ import { MatIcon } from "@angular/material/icon";
         <div class="flex items-center justify-between mt-auto">
           <span class="text-2xl font-bold text-gray-900">
             {{ product().price | currency }}
+          </span>
             <button matButton="filled" class="flex items-center gap-2" (click)="addToCartClicked.emit(product())">
               <mat-icon>shopping_cart</mat-icon>
               Add to cart 
             </button>
-          </span>
         </div>
 
       </div>

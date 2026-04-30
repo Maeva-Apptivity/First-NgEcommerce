@@ -25,7 +25,7 @@ import { ToggleWishlistButton } from "../../components/toggle-wishlist-button/to
 
 <!-- Section SideBar -->
     <mat-sidenav-container>
-      <mat-sidenav mode="side" opened="true">
+      <mat-sidenav mode="side" opened="true" class="!bg-taupe-100">
         <div class="p-6">
           <h2 class="text-lg text-gray-900">Catégories</h2>
 
@@ -43,7 +43,7 @@ import { ToggleWishlistButton } from "../../components/toggle-wishlist-button/to
       </mat-sidenav>
 
       <!-- Section grille avec produit filtrée -->
-      <mat-sidenav-content class="bg-gray-100 p-6 h-full">
+      <mat-sidenav-content class="p-6 h-full">
         <h1 class="text-2xl font-bold text-gray-900 mb-1">{{category() | titlecase}}</h1>
         <p class="text-base text-gray-600 mb-6">
           {{ store.filteredProducts().length }} products found
