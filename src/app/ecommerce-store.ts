@@ -153,6 +153,9 @@ export const EcommerceStore = signalStore(
                 wishlistItems: store.wishlistItems().filter((p)=> p.id !== product.id),
             });
             toaster.success('Product removed from wishlist');
+        },
+        clearWishlist: () => {
+            patchState(store, {wishlistItems: []});
         }
     }))
 
