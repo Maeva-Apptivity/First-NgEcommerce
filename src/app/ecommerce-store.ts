@@ -164,6 +164,7 @@ export const EcommerceStore = signalStore(
             patchState(store, {wishlistItems: []});
         },
 
+        // // Ajoute un produit au panier ou incrémente sa quantité s'il existe déjà.
         addToCart: (product : Product, quantity = 1) => {
             const existingItemIndex = store.cartItems().findIndex(i=> i.product.id === product.id);
 
