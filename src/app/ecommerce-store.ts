@@ -11,6 +11,7 @@ import {
 import {produce} from "immer";
 import { Toaster } from "./services/toaster";
 import { CartItem } from "./models/cart";
+import { filter } from "rxjs";
 
 export type EcommerceState = {
     products : Product[];
@@ -164,7 +165,7 @@ export const EcommerceStore = signalStore(
             patchState(store, {wishlistItems: []});
         },
 
-        // // Ajoute un produit au panier ou incrémente sa quantité s'il existe déjà.
+        // Ajoute un produit au panier ou incrémente sa quantité s'il existe déjà.
         addToCart: (product : Product, quantity = 1) => {
             const existingItemIndex = store.cartItems().findIndex(i=> i.product.id === product.id);
 
@@ -181,5 +182,42 @@ export const EcommerceStore = signalStore(
             patchState(store,{ cartItems: updatedCartItems })
             toaster.success(existingItemIndex !== -1 ? 'Product added again' : 'Product added to the cart')
         } ,
+        // Met a jour la quantité d'un article spécifique via son id
+        setItemQuantity(params: {productId: string, quantity: number}){
+            const index = store.cartItems().findIndex(c => c.product.id === params.productId);
+            const updated = produce(store.cartItems(), (draft) => {
+                draft[index].quantity = params.quantity
+            });
+            patchState(store, {cartItems: updated});
+        },
+        //Transfère tous les articles de la liste de souhaits vers le panier
+        addAllWishlistToCart: () => {
+            const updatedCartItems = produce(store.cartItems(),(draft)=> {
+                store.wishlistItems().forEach(p => {
+                    // Ajoute que si le produit n'est pas encore dans le panier
+                    if (!draft.find(c => c.product.id === p.id)){
+                        draft.push({product: p , quantity:1});
+                    }
+                })
+            })
+            // Vide la liste de souhaits après le transfert
+            patchState(store,{cartItems : updatedCartItems, wishlistItems:[]})
+        },
+
+        // Déplace un produit spécifique du panier vers la liste de souhaits
+        moveToWishlist:(product : Product) => {
+            const updatedCartItems = store.cartItems().filter((p => p.product.id !== product.id))
+            const updatedWishlistItems = produce(store.wishlistItems(),(draft)=> {
+                draft.push(product)
+            })
+            patchState(store, {cartItems: updatedCartItems, wishlistItems: updatedWishlistItems});
+        },
+
+        // Supprime un article spécifique du panier
+        removeFromCart: (product: Product) => {
+            patchState(store,{
+                cartItems: store.cartItems().filter((c) => c.product.id !== product.id)
+            });
+        },
     }))
 );

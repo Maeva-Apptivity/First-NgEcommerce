@@ -1,13 +1,13 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { Product } from '../../models/products';
 import { CurrencyPipe } from '@angular/common';
-import { MatAnchor} from "@angular/material/button";
+import { MatButton} from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { EcommerceStore } from '../../ecommerce-store';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe, MatAnchor, MatIcon],
+  imports: [CurrencyPipe, MatButton, MatIcon],
   template: `
 
   <!-- Section image -->
