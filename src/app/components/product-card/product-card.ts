@@ -1,12 +1,13 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { Product } from '../../models/products';
 import { CurrencyPipe } from '@angular/common';
-import { MatAnchor} from "@angular/material/button";
+import { MatButton} from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
+import { EcommerceStore } from '../../ecommerce-store';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe, MatAnchor, MatIcon],
+  imports: [CurrencyPipe, MatButton, MatIcon],
   template: `
 
   <!-- Section image -->
@@ -37,7 +38,7 @@ import { MatIcon } from "@angular/material/icon";
           <span class="text-2xl font-bold text-gray-900">
             {{ product().price | currency }}
           </span>
-            <button matButton="filled" class="flex items-center gap-2" (click)="addToCartClicked.emit(product())">
+            <button matButton="filled" class="flex items-center gap-2" (click)="store.addToCart(product())">
               <mat-icon>shopping_cart</mat-icon>
               Add to cart 
             </button>
@@ -52,8 +53,5 @@ export class ProductCard {
 
   // Réception des produits
   product = input.required<Product>();
-
-  // Emet un 'événement pour l'ajout du produit dans le panier
-  addToCartClicked = output<Product>();
-
+  store = inject(EcommerceStore);
 }

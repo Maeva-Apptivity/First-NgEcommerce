@@ -18,5 +18,10 @@ export const routes: Routes = [
     {
         path : 'wishlist',
         loadComponent: () => import('./pages/my-wishlist/my-wishlist'),
-    }
+    },
+    // route vers le panier
+    {
+        path : 'cart',
+        loadComponent: () => import('./pages/view-cart/view-cart'),
+    },
 ];
